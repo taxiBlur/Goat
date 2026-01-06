@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Add Goat — GOAT Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#6f4e37;
+  --muted:#f7f5f5;
+  --nav-height:86px;
+  --input-bg:#fff;
+  --input-border:#ccc;
+  --shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto;
+  padding-top: var(--nav-height);
+  background-color:var(--muted);
+}
+header{
+  height:var(--nav-height);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px 16px;
+  border-bottom:1px solid #ececec;
+  background:var(--muted);
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:1000;
+}
+.top-row{
+  width:100%;
+  max-width:1200px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  font-family:'Playfair Display',serif;
+  color:var(--accent);
+  font-size:2rem;
+  letter-spacing:2px;
+  text-align:center;
+  flex:1;
+}
+nav{
+  width:100%;
+  max-width:1200px;
+  margin-top:6px;
+  display:flex;
+  justify-content:center;
+}
+nav ul{
+  display:flex;
+  gap:16px;
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+nav a{
+  text-decoration:none;
+  font-weight:600;
+  color:#222;
+  padding:6px 12px;
+  border-radius:6px;
+  transition:0.3s;
+}
+nav a:hover{
+  background:var(--accent);
+  color:white;
+}
+main{
+  max-width:500px;
+  margin:120px auto 40px;
+  background:white;
+  padding:36px 28px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  transition:transform 0.3s, box-shadow 0.3s;
+}
+main:hover {
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(0,0,0,0.15);
+}
+h2{
+  text-align:center;
+  margin-bottom:24px;
+  color:var(--accent);
+  font-family:'Playfair Display', serif;
+  font-weight:700;
+  font-size:2rem;
+}
+label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+  color:#333;
+}
+input, select, button {
+  font-size:1rem;
+  border-radius:10px;
+  outline:none;
+  transition:0.3s;
+}
+input, select {
+  width:100%;
+  padding:14px 16px;
+  border:1px solid var(--input-border);
+  background:var(--input-bg);
+}
+input:focus, select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(111,78,55,0.15);
+}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  background:var(--accent);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  font-size:1.05rem;
+  margin-top:12px;
+  transition:0.3s;
+}
+button:hover{
+  background:#54372a;
+}
+#img-preview {
+  width:100%;
+  max-height:250px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid #ccc;
+  margin-bottom:16px;
+  display:none;
+  box-shadow:0 6px 16px rgba(0,0,0,0.1);
+}
+/* Modal styles */
+#success-modal {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index:2000;
+}
+#success-modal .modal-content {
+  background:white;
+  padding:24px 32px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+  animation:fadeIn 0.3s ease-out;
+}
+#success-modal button {
+  margin-top:16px;
+  background:var(--accent);
+}
+@keyframes fadeIn {
+  from {opacity:0; transform:scale(0.95);}
+  to {opacity:1; transform:scale(1);}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top-row">
+    <div style="width:120px"></div>
+    <div class="logo">Bagaloyos Goat Farm</div>
+    <div style="width:120px"></div>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="admin.html">Home</a></li>
+      <li><a href="manage.html">Manage Goats</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+<h2>Add a New Goat</h2>
+<form id="add-goat-form">
+  <label for="breed">Breed</label>
+  <input type="text" id="breed" placeholder="Goat breed" required>
+
+  <label for="sex">Sex</label>
+  <select id="sex" required>
+    <option value="">Select Sex</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
+
+  <label for="age-years">Age (Years)</label>
+  <input type="number" id="age-years" min="0" step="1" required placeholder="0">
+
+  <label for="age-months">Age (Months, 1.5.. etc)</label>
+  <input type="number" id="age-months" min="0" max="11.9" step="0.1" required placeholder="0">
+
+  <label for="local">Origin</label>
+  <select id="local" required>
+    <option value="">Select Origin</option>
+    <option value="Imported">Imported</option>
+    <option value="Locally Bred">Locally Bred</option>
+  </select>
+
+  <label for="img">Image</label>
+  <input type="file" id="img" accept="image/*">
+  <img id="img-preview" alt="Image Preview">
+
+  <button type="submit">Add Goat</button>
+</form>
+</main>
+
+<div id="success-modal">
+  <div class="modal-content">
+    <h3>Goat Added Successfully!</h3>
+    <p id="goat-info"></p>
+    <button onclick="closeModal()">OK</button>
+  </div>
+</div>
+
+<script>
+// Image preview
+const imgInput = document.getElementById('img');
+const imgPreview = document.getElementById('img-preview');
+const modal = document.getElementById('success-modal');
+const goatInfo = document.getElementById('goat-info');
+
+imgInput.addEventListener('change', () => {
+  const file = imgInput.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      imgPreview.src = e.target.result;
+      imgPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imgPreview.src = '';
+    imgPreview.style.display = 'none';
+  }
+});
+
+// Increment prefix helper
+function incrementPrefix(prefix){
+  let arr = prefix.split('').map(c => c.charCodeAt(0));
+  let i = arr.length - 1;
+  while(i >= 0){
+    if(arr[i] < 90){ arr[i]++; break; }
+    else { arr[i] = 65; if(i===0) arr.unshift(65); i--; }
+  }
+  return arr.map(c=>String.fromCharCode(c)).join('');
+}
+
+// Generate unique ID
+function generateGoatId(goats){
+  const usedIds = new Set(goats.filter(g=>g && g.id).map(g=>g.id));
+  let prefix = 'A';
+  while(true){
+    for(let i=1;i<=999;i++){
+      const candidate = `GOAT ${prefix} ${i.toString().padStart(3,'0')}`;
+      if(!usedIds.has(candidate)) return candidate;
+    }
+    prefix = incrementPrefix(prefix);
+  }
+}
+
+// Compress image to reduce size (max 800px width/height)
+function compressImage(file, maxSize=800) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.src = e.target.result;
+    };
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let w = img.width;
+      let h = img.height;
+      if(w > h && w > maxSize) { h = h * maxSize / w; w = maxSize; }
+      else if(h > w && h > maxSize) { w = w * maxSize / h; h = maxSize; }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',0.7)); // compress to JPEG
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Form submission
+document.getElementById('add-goat-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  let imgData = '';
+  const file = imgInput.files[0];
+  if(file){
+    try { imgData = await compressImage(file); }
+    catch(err){ console.error("Image processing failed:", err); imgData=''; }
+  }
+
+  let goats = JSON.parse(localStorage.getItem('goats') || '[]');
+  goats = goats.filter(g=>g && g.id);
+
+  const newGoat = {
+    id: generateGoatId(goats),
+    breed: document.getElementById('breed').value.trim(),
+    sex: document.getElementById('sex').value,
+    age: {
+      years: parseInt(document.getElementById('age-years').value),
+      months: parseFloat(document.getElementById('age-months').value)
+    },
+    local: document.getElementById('local').value,
+    img: imgData,
+    addedAt: new Date().toLocaleString()
+  };
+
+  goats.push(newGoat);
+  localStorage.setItem('goats', JSON.stringify(goats));
+
+  goatInfo.innerHTML = `
+    <strong>ID:</strong> ${newGoat.id}<br>
+    <strong>Breed:</strong> ${newGoat.breed}<br>
+    <strong>Sex:</strong> ${newGoat.sex}<br>
+    <strong>Age:</strong> ${newGoat.age.years} years, ${newGoat.age.months} months<br>
+    <strong>Origin:</strong> ${newGoat.local}<br>
+    <strong>Total Goats Stored:</strong> ${goats.length}
+  `;
+  modal.style.display = 'flex';
+
+  this.reset();
+  imgPreview.style.display = 'none';
+});
+
+function closeModal(){ modal.style.display = 'none'; }
+</script>
+</body>
+</html>

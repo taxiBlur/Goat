@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Manage Goats — GOAT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: Montserrat, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+}
+header {
+  background: #6f4e37;
+  color: #fff;
+  padding: 16px;
+}
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+}
+nav ul {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+nav a:hover {
+  background: rgba(255,255,255,.2);
+}
+main {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+h1 {
+  text-align: center;
+  color: #6f4e37;
+  margin-bottom: 24px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  word-wrap: break-word;
+}
+th {
+  background: #6f4e37;
+  color: #fff;
+}
+td img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.view-btn { background: #6f4e37; color: #fff; margin-right: 6px; }
+.edit-btn { background: #3498db; color: #fff; margin-right: 6px; }
+.delete-btn { background: #e74c3c; color: #fff; }
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: auto;
+}
+.modal-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  max-width: 90%;
+  width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: center;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.confirm-box {
+  background: #fff;
+  padding: 22px;
+  border-radius: 12px;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+}
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.btn-cancel { flex: 1; background: #ccc; }
+.btn-confirm { flex: 1; background: #e74c3c; color: #fff; }
+
+input, select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 10px;
+}
+#editPreview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+.highlight {
+  background: yellow;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* Scroll container for parents and children */
+.scroll-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+.scroll-container::-webkit-scrollbar { height: 8px; }
+.scroll-container::-webkit-scrollbar-thumb { background: #6f4e37; border-radius: 4px; }
+.scroll-item {
+  text-align: center;
+  flex: 0 0 auto;
+  min-width: 100px;
+}
+.scroll-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.2s;
+}
+.scroll-item img:hover {
+  transform: scale(1.05);
+}
+.scroll-item span {
+  display: block;
+  margin-top: 4px;
+  word-wrap: break-word;
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width:768px){
+  .top-row{ flex-direction: column; align-items: flex-start; gap: 12px; }
+  .logo{ font-size: 1.5rem; }
+  table th, table td{ padding: 8px; font-size: 0.9rem; }
+  td img{ width: 60px; height: 60px; }
+}
+@media (max-width:480px){
+  nav ul{ flex-direction: column; width: 100%; gap: 8px; }
+  table{ font-size: 0.85rem; }
+  table th, table td{ padding: 6px; }
+  td img{ width: 50px; height: 50px; }
+  .view-btn, .delete-btn, .edit-btn{ padding: 4px 8px; font-size: 0.85rem; }
+  .scroll-item { min-width: 80px; }
+  .scroll-item img { width: 80px; height: 80px; }
+}
+@media (max-width:360px){
+  h1{ font-size: 1.5rem; }
+  table th, table td{ font-size: 0.8rem; padding: 4px; }
+  td img{ width: 40px; height: 40px; }
+  .scroll-item { min-width: 60px; }
+  .scroll-item img { width: 60px; height: 60px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="top-row">
+    <div class="logo">Bagaloyos Goat Farm</div>
+    <nav>
+      <ul>
+        <li><a href="admin.html">Home</a></li>
+        <li><a href="add.html">Add Goat</a></li>
+        <li><a href="bred.html">Breed Goats</a></li>
+        <li><a href="medic.html">Medicine</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1>Manage Your Goats</h1>
+
+  <div style="text-align:right;margin-bottom:10px;">
+    <input type="text" id="searchInput" placeholder="Search by ID, Breed, or Origin">
+  </div>
+
+  <table id="goatTable">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>ID</th>
+        <th>Sex</th>
+        <th>Age</th>
+        <th>Breed</th>
+        <th>Origin</th>
+        <th>Added At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="pagination" style="text-align:center;margin-top:12px;"></div>
+</main>
+
+<!-- View Modal -->
+<div class="modal" id="viewModal">
+  <div class="modal-content">
+    <span class="modal-close" id="viewClose">&times;</span>
+    <div id="viewBody" style="display:flex;flex-direction:column;gap:12px;"></div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <span class="modal-close" id="editClose">&times;</span>
+    <h3>Edit Goat</h3>
+    <form id="editForm">
+      <label>Sex</label>
+      <select id="editSex"><option value="Male">Male</option><option value="Female">Female</option></select>
+      <label>Age (Years)</label>
+      <input type="number" id="editYears" min="0">
+      <label>Age (Months)</label>
+      <input type="number" id="editMonths" min="0" max="11">
+      <label>Breed</label>
+      <input type="text" id="editBreed">
+      <label>Origin</label>
+      <input type="text" id="editOrigin">
+      <label>Image</label>
+      <input type="file" id="editFile">
+      <img id="editPreview" src="" alt="Image Preview">
+      <button type="submit" style="background:#3498db;color:#fff;">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal" id="deleteModal">
+  <div class="confirm-box">
+    <h3>Confirm Deletion</h3>
+    <p id="deleteText"></p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" id="cancelDelete">Cancel</button>
+      <button class="btn-confirm" id="confirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- Helpers ---
+const tableBody = document.querySelector('#goatTable tbody');
+const paginationDiv = document.getElementById('pagination');
+const viewModal = document.getElementById('viewModal');
+const viewBody = document.getElementById('viewBody');
+const viewClose = document.getElementById('viewClose');
+const editModal = document.getElementById('editModal');
+const editClose = document.getElementById('editClose');
+const editForm = document.getElementById('editForm');
+const editSex = document.getElementById('editSex');
+const editYears = document.getElementById('editYears');
+const editMonths = document.getElementById('editMonths');
+const editBreed = document.getElementById('editBreed');
+const editOrigin = document.getElementById('editOrigin');
+const editFile = document.getElementById('editFile');
+const editPreview = document.getElementById('editPreview');
+const deleteModal = document.getElementById('deleteModal');
+const deleteText = document.getElementById('deleteText');
+const confirmDelete = document.getElementById('confirmDelete');
+const cancelDelete = document.getElementById('cancelDelete');
+const searchInput = document.getElementById('searchInput');
+
+let editId = null;
+let deleteId = null;
+const goatsPerPage = 10;
+let currentPage = 1;
+
+function getGoats() { return JSON.parse(localStorage.getItem('goats') || '[]'); }
+function saveGoats(goats) { localStorage.setItem('goats', JSON.stringify(goats)); }
+
+// --- Render Table ---
+function renderGoats(){
+  const goats = getGoats();
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  const filtered = goats.filter(g =>
+    g.id.toLowerCase().includes(searchTerm) ||
+    g.breed.toLowerCase().includes(searchTerm) ||
+    g.local.toLowerCase().includes(searchTerm)
+  );
+
+  const totalPages = Math.ceil(filtered.length / goatsPerPage);
+  if(currentPage > totalPages) currentPage = totalPages || 1;
+  const start = (currentPage-1)*goatsPerPage;
+  const end = start+goatsPerPage;
+  const goatsToShow = filtered.slice(start,end);
+
+  tableBody.innerHTML='';
+
+  goatsToShow.forEach(g=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${g.img||'sheep.jpg'}" alt="Goat Image"></td>
+      <td>${g.id}</td>
+      <td>${g.sex}</td>
+      <td>${g.age.years}y ${g.age.months}m</td>
+      <td>${g.breed}</td>
+      <td>${g.local}</td>
+      <td>${g.addedAt}</td>
+      <td>
+        <button class="view-btn">View</button>
+        <button class="edit-btn">Edit</button>
+        <button class="delete-btn">Delete</button>
+      </td>
+    `;
+
+    // --- View ---
+    tr.querySelector('.view-btn').onclick = ()=>{
+      const goatsList = getGoats();
+
+      let parentsHTML = '<p>None</p>';
+      let childrenHTML = '<p>None</p>';
+
+      if(g.parents){
+        const maleParent = goatsList.find(goat => goat.id === g.parents.male);
+        const femaleParent = goatsList.find(goat => goat.id === g.parents.female);
+        parentsHTML = `
+          <div class="scroll-container">
+            <div class="scroll-item"><img src="${maleParent?.img||'sheep.jpg'}"><span>${maleParent?.id||'Unknown'} (Male)</span></div>
+            <div class="scroll-item"><img src="${femaleParent?.img||'sheep.jpg'}"><span>${femaleParent?.id||'Unknown'} (Female)</span></div>
+          </div>
+        `;
+      }
+
+      if(g.children && g.children.length > 0){
+        childrenHTML = `<div class="scroll-container">
+          ${g.children.map(cid=>{
+            const child = goatsList.find(goat=>goat.id===cid);
+            return child? `<div class="scroll-item"><img src="${child.img||'sheep.jpg'}"><span>${child.id}</span></div>`:'';
+          }).join('')}
+        </div>`;
+      }
+
+      // Success rate per goat
+      const successRate = calculateSuccessRate(g.id);
+      
+      viewBody.innerHTML = `
+        <h3>Goat ID: ${g.id}</h3>
+        <img src="${g.img||'sheep.jpg'}" style="width:100%;border-radius:8px;margin-bottom:10px;">
+        <p><strong>Sex:</strong> ${g.sex}</p>
+        <p><strong>Age:</strong> ${g.age.years}y ${g.age.months}m</p>
+        <p><strong>Breed:</strong> ${g.breed}</p>
+        <p><strong>Origin:</strong> ${g.local}</p>
+        <p><strong>Added At:</strong> ${g.addedAt}</p>
+        <p><strong>Parents:</strong></p>${parentsHTML}
+        <p><strong>Children:</strong></p>${childrenHTML}
+        <p><strong>Success Rate:</strong> ${successRate}%</p>
+      `;
+      viewModal.style.display='flex';
+    };
+
+    // --- Edit ---
+    tr.querySelector('.edit-btn').onclick = ()=>{
+      editId = g.id;
+      editSex.value = g.sex;
+      editYears.value = g.age.years;
+      editMonths.value = g.age.months;
+      editBreed.value = g.breed;
+      editOrigin.value = g.local;
+      editPreview.src = g.img || 'sheep.jpg';
+      editFile.value = '';
+      editModal.style.display = 'flex';
+    };
+
+    // --- Delete ---
+    tr.querySelector('.delete-btn').onclick = ()=>{
+      deleteId = g.id;
+      deleteText.textContent = `Delete goat ID "${g.id}"? This cannot be undone.`;
+      deleteModal.style.display = 'flex';
+    };
+
+    tableBody.appendChild(tr);
+  });
+
+  // Pagination
+  paginationDiv.innerHTML = '';
+  for(let i=1;i<=totalPages;i++){
+    const btn = document.createElement('button');
+    btn.textContent=i;
+    btn.style.margin='0 3px';
+    btn.style.padding='4px 8px';
+    if(i===currentPage){ btn.style.background='#6f4e37'; btn.style.color='#fff'; }
+    btn.onclick = ()=>{ currentPage=i; renderGoats(); }
+    paginationDiv.appendChild(btn);
+  }
+}
+
+// --- Edit Form ---
+editForm.onsubmit = e=>{
+  e.preventDefault();
+  if(editId){
+    const goats = getGoats();
+    const g = goats.find(goat=>goat.id===editId);
+    if(!g) return;
+
+    g.sex = editSex.value;
+    g.age.years = parseInt(editYears.value)||0;
+    g.age.months = parseInt(editMonths.value)||0;
+    g.breed = editBreed.value;
+    g.local = editOrigin.value;
+    g.img = editPreview.src; // always store individual image
+    saveGoats(goats);
+    editId = null;
+    editModal.style.display='none';
+    renderGoats();
+  }
+};
+
+// --- Delete ---
+confirmDelete.onclick = ()=>{
+  if(deleteId){
+    const goats = getGoats();
+    const idx = goats.findIndex(g=>g.id===deleteId);
+    if(idx===-1) return;
+    const toDelete = goats[idx];
+
+    // remove from parents' children
+    if(toDelete.parents){
+      const maleParent = goats.find(g=>g.id===toDelete.parents.male);
+      const femaleParent = goats.find(g=>g.id===toDelete.parents.female);
+      if(maleParent) maleParent.children=(maleParent.children||[]).filter(c=>c!==toDelete.id);
+      if(femaleParent) femaleParent.children=(femaleParent.children||[]).filter(c=>c!==toDelete.id);
+    }
+
+    // remove parent reference from children
+    goats.forEach(g=>{
+      if(g.parents && (g.parents.male===toDelete.id || g.parents.female===toDelete.id)) g.parents=null;
+    });
+
+    goats.splice(idx,1);
+    saveGoats(goats);
+    deleteId=null;
+    deleteModal.style.display='none';
+    renderGoats();
+  }
+};
+
+cancelDelete.onclick = ()=>{ deleteId=null; deleteModal.style.display='none'; };
+viewClose.onclick = ()=>viewModal.style.display='none';
+editClose.onclick = ()=>editModal.style.display='none';
+window.onclick = e=>{
+  if(e.target===viewModal) viewModal.style.display='none';
+  if(e.target===editModal) editModal.style.display='none';
+  if(e.target===deleteModal){ deleteId=null; deleteModal.style.display='none'; }
+};
+
+// --- File Preview ---
+editFile.onchange = e=>{
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = ev => editPreview.src = ev.target.result;
+    reader.readAsDataURL(file);
+  }
+};
+
+// --- Search ---
+searchInput.addEventListener('input', ()=>{ currentPage=1; renderGoats(); });
+
+// --- Success Rate ---
+function calculateSuccessRate(goatId){
+  const history = JSON.parse(localStorage.getItem('breedingHistory')||'[]');
+  const records = history.filter(h=>h.male===goatId || h.female===goatId);
+  if(records.length===0) return 0;
+  const success = records.filter(r=>r.outcome==='Success').length;
+  return Math.round((success/records.length)*100);
+}
+
+renderGoats();
+</script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goat Medicine — SHEEP</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Base */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Montserrat,sans-serif;background:#f4f4f4;color:#333;line-height:1.5;}
+header{background:#6f4e37;color:#fff;padding:16px;}
+.top-row{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;flex-wrap:wrap;}
+.logo{font-size:2rem;font-family:'Playfair Display',serif;}
+nav ul{display:flex;gap:16px;list-style:none;flex-wrap:wrap;margin-top:8px;}
+nav a{text-decoration:none;color:#fff;font-weight:600;padding:6px 12px;border-radius:6px;transition:background 0.3s;}
+nav a:hover{background:rgba(255,255,255,0.2);}
+
+/* Main */
+main{max-width:1200px;margin:80px auto 40px;padding:0 16px;display:flex;flex-direction:column;gap:40px;}
+h1,h2{text-align:center;color:#6f4e37;}
+h1{font-size:2rem;margin-bottom:8px;}
+h2{font-size:1.5rem;margin-top:0;margin-bottom:16px;}
+.instructions{text-align:center;color:#555;max-width:600px;margin:0 auto 24px;font-size:0.95rem;}
+
+/* Form */
+form{background:#fff;padding:24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;}
+form input, form select, form textarea{flex:1 1 45%;padding:12px;border-radius:8px;border:1px solid #ccc;font-size:1rem;outline:none;}
+form textarea{flex:1 1 100%;}
+form button{flex:1 1 100%;padding:12px;background:#6f4e37;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:0.3s;}
+form button:hover{background:#593c2b;}
+
+/* Table */
+.table-container{overflow-x:auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+table{width:100%;border-collapse:collapse;min-width:700px;}
+th,td{text-align:center;padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
+th{background:#6f4e37;color:#fff;border-radius:8px 8px 0 0;}
+td img{width:50px;height:50px;object-fit:cover;border-radius:8px;vertical-align:middle;margin-right:8px;}
+.delete-btn, .edit-btn, .save-btn, .cancel-btn{border:none;border-radius:6px;padding:6px 12px;cursor:pointer;transition:0.3s;}
+.delete-btn{background:#e74c3c;color:#fff;}
+.delete-btn:hover{background:#c0392b;}
+.edit-btn{background:#3498db;color:#fff;margin-left:6px;}
+.edit-btn:hover{background:#2980b9;}
+.save-btn{background:#2ecc71;color:#fff;margin-right:6px;}
+.save-btn:hover{background:#27ae60;}
+.cancel-btn{background:#95a5a6;color:#fff;}
+.cancel-btn:hover{background:#7f8c8d;}
+
+/* Low stock highlight */
+.low-stock{color:red;font-weight:600;}
+
+/* Modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:9999;}
+.modal-content{background:#fff;padding:24px;border-radius:12px;max-width:400px;width:90%;text-align:center;position:relative;}
+.modal-close{position:absolute;top:10px;right:14px;font-size:20px;font-weight:bold;cursor:pointer;}
+
+/* Confirm Modal */
+.confirm-box{background:#fff;padding:24px;border-radius:12px;max-width:400px;width:90%;text-align:center;}
+.confirm-actions{display:flex;justify-content:center;gap:12px;margin-top:16px;}
+.confirm-actions button{padding:8px 16px;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:0.3s;}
+.btn-confirm{background:#e74c3c;color:#fff;}
+.btn-confirm:hover{background:#c0392b;}
+.btn-cancel{background:#6f4e37;color:#fff;}
+.btn-cancel:hover{background:#593c2b;}
+
+/* Toast */
+#toast{position:fixed;bottom:20px;right:20px;background:#6f4e37;color:#fff;padding:12px 20px;border-radius:8px;display:none;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+
+/* Responsive */
+@media(max-width:768px){
+  form input, form select{flex:1 1 100%;}
+  table{min-width:100%;}
+  td img{width:40px;height:40px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top-row">
+    <div class="logo">Bagaloyos Goat Farm</div>
+    <nav>
+      <ul>
+        <li><a href="admin.html">Home</a></li>
+        <li><a href="manage.html">Manage Goats</a></li>
+        <li><a href="add.html">Add Goat</a></li>
+        <li><a href="bred.html">Breed Goats</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+<h1>Goat Medicine Management</h1>
+<p class="instructions">
+Manage your goat medicines here. Add new medicines, apply them to goats, and track usage history. Medicines with low stock will be highlighted in red.
+</p>
+
+<h2>Add New Medicine</h2>
+<form id="add-medicine-form">
+  <input type="text" id="med-name" placeholder="Medicine Name" required>
+  <textarea id="med-desc" placeholder="Description / Dosage" rows="2"></textarea>
+  <input type="number" id="med-qty" placeholder="Quantity" required min="1">
+  <select id="med-unit" required>
+    <option value="mg">mg</option>
+    <option value="g">g</option>
+    <option value="bottle">bottle</option>
+  </select>
+  <button type="submit">Add Medicine</button>
+</form>
+
+<h2>Available Medicines</h2>
+<div class="table-container">
+  <table id="medicine-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2>Apply Medicine to Goat</h2>
+<form id="apply-medicine-form">
+  <select id="select-goat" required>
+    <option value="">Select Goat</option>
+  </select>
+  <select id="select-medicine" required>
+    <option value="">Select Medicine</option>
+  </select>
+  <input type="number" id="apply-qty" placeholder="Amount" min="1" required>
+  <select id="apply-unit" required>
+    <option value="mg">mg</option>
+    <option value="g">g</option>
+    <option value="bottle">bottle</option>
+  </select>
+  <input type="date" id="apply-date" required>
+  <textarea id="apply-notes" placeholder="Notes / Observations" rows="2"></textarea>
+  <button type="submit">Apply Medicine</button>
+</form>
+
+<h2>Medicine History</h2>
+<input type="text" id="history-search" placeholder="Search by Goat ID or Medicine Name..." style="width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid #ccc;">
+<div class="table-container">
+  <table id="history-table">
+    <thead>
+      <tr>
+        <th>Goat</th>
+        <th>Medicine</th>
+        <th>Amount</th>
+        <th>Date & Time</th>
+        <th>Notes</th>  
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+</main>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Confirm Modals -->
+<div class="modal" id="medDeleteModal">
+  <div class="confirm-box">
+    <h3>Confirm Deletion</h3>
+    <p id="medDeleteText"></p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" id="medCancelDelete">Cancel</button>
+      <button class="btn-confirm" id="medConfirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="historyDeleteModal">
+  <div class="confirm-box">
+    <h3>Confirm Deletion</h3>
+    <p id="historyDeleteText"></p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" id="historyCancelDelete">Cancel</button>
+      <button class="btn-confirm" id="historyConfirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- Toast ---
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(()=>{ t.style.display='none'; }, 3000);
+}
+
+// --- Storage Helpers ---
+function loadGoats(){ return JSON.parse(localStorage.getItem('goats')||'[]'); }
+function loadMedicines(){ return JSON.parse(localStorage.getItem('medicines')||'[]'); }
+function loadHistory(){ return JSON.parse(localStorage.getItem('medicineHistory')||'[]'); }
+function saveMedicines(meds){ localStorage.setItem('medicines',JSON.stringify(meds)); }
+function saveHistory(hist){ localStorage.setItem('medicineHistory',JSON.stringify(hist)); }
+
+// --- Dropdowns ---
+const selectGoat = document.getElementById('select-goat');
+const selectMed = document.getElementById('select-medicine');
+function populateDropdowns(){
+  const goats = loadGoats();
+  const meds = loadMedicines();
+  selectGoat.innerHTML = '<option value="">Select Goat</option>';
+  goats.forEach(g=>selectGoat.innerHTML+=`<option value="${g.id}">${g.id} - ${g.breed}</option>`);
+  selectMed.innerHTML = '<option value="">Select Medicine</option>';
+  meds.forEach(m=>selectMed.innerHTML+=`<option value="${m.name}">${m.name}</option>`);
+}
+
+// --- Render Medicines Table ---
+const medTableBody = document.querySelector('#medicine-table tbody');
+let medDeleteIndex = null;
+const medDeleteModal = document.getElementById('medDeleteModal');
+const medDeleteText = document.getElementById('medDeleteText');
+const medConfirmDelete = document.getElementById('medConfirmDelete');
+const medCancelDelete = document.getElementById('medCancelDelete');
+
+function renderMedicines(){
+  const meds = loadMedicines();
+  medTableBody.innerHTML='';
+  meds.forEach((m,index)=>{
+    const tr=document.createElement('tr');
+    const lowStockClass = m.qty < 5 ? 'low-stock' : '';
+    tr.innerHTML=`
+      <td>${m.name}</td>
+      <td>${m.desc||''}</td>
+      <td class="${lowStockClass}">${m.qty}</td>
+      <td>${m.unit}</td>
+      <td>
+        <button class="edit-btn" data-index="${index}">Edit</button>
+        <button class="delete-btn" data-index="${index}">Delete</button>
+      </td>`;
+    medTableBody.appendChild(tr);
+  });
+
+  // Delete buttons
+  document.querySelectorAll('#medicine-table .delete-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      medDeleteIndex=parseInt(btn.dataset.index);
+      medDeleteText.textContent=`Delete medicine "${loadMedicines()[medDeleteIndex].name}"?`;
+      medDeleteModal.style.display='flex';
+    };
+  });
+
+  // Edit buttons
+  document.querySelectorAll('#medicine-table .edit-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const meds=loadMedicines();
+      const index=parseInt(btn.dataset.index);
+      const tr=btn.closest('tr');
+      const med=meds[index];
+      tr.innerHTML=`
+        <td><input type="text" value="${med.name}" style="width:100%"></td>
+        <td><input type="text" value="${med.desc}" style="width:100%"></td>
+        <td><input type="number" value="${med.qty}" min="1" style="width:80px"></td>
+        <td>
+          <select>
+            <option value="mg" ${med.unit==='mg'?'selected':''}>mg</option>
+            <option value="g" ${med.unit==='g'?'selected':''}>g</option>
+            <option value="bottle" ${med.unit==='bottle'?'selected':''}>bottle</option>
+          </select>
+        </td>
+        <td>
+          <button class="save-btn">Save</button>
+          <button class="cancel-btn">Cancel</button>
+        </td>`;
+
+      tr.querySelector('.save-btn').onclick=()=>{
+        const inputs=tr.querySelectorAll('input,select');
+        meds[index]={name:inputs[0].value.trim()||med.name,desc:inputs[1].value.trim(),qty:parseFloat(inputs[2].value)||med.qty,unit:inputs[3].value};
+        saveMedicines(meds);
+        renderMedicines();
+        populateDropdowns();
+        showToast('Medicine updated!');
+      };
+      tr.querySelector('.cancel-btn').onclick=()=>renderMedicines();
+    };
+  });
+}
+
+// --- Confirm Medicine Delete ---
+medConfirmDelete.onclick=()=>{
+  if(medDeleteIndex!==null){
+    let meds=loadMedicines();
+    meds.splice(medDeleteIndex,1);
+    saveMedicines(meds);
+    medDeleteIndex=null;
+    medDeleteModal.style.display='none';
+    renderMedicines();
+    populateDropdowns();
+  }
+};
+medCancelDelete.onclick=()=>{medDeleteIndex=null;medDeleteModal.style.display='none';};
+window.addEventListener('click',e=>{if(e.target===medDeleteModal){medDeleteIndex=null;medDeleteModal.style.display='none';}});
+
+// --- Render History Table ---
+const historyTable=document.querySelector('#history-table tbody');
+let historyDeleteIndex=null;
+const historyDeleteModal=document.getElementById('historyDeleteModal');
+const historyDeleteText=document.getElementById('historyDeleteText');
+const historyConfirmDelete=document.getElementById('historyConfirmDelete');
+const historyCancelDelete=document.getElementById('historyCancelDelete');
+
+function formatTime12(date){
+  let hours=date.getHours();
+  const minutes=date.getMinutes();
+  const ampm=hours>=12?'PM':'AM';
+  hours=hours%12||12;
+  return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')} ${ampm}`;
+}
+
+// --- History Search Input ---
+const historySearch = document.getElementById('history-search');
+
+// --- Render History with Live Search ---
+function renderHistory(){
+  const history=loadHistory();
+  const goats=loadGoats();
+  const query = historySearch.value.toLowerCase();
+  historyTable.innerHTML='';
+
+  history.forEach((h,index)=>{
+    const goat=goats.find(g=>g.id===h.goatId);
+    const goatImg=goat?goat.img||'sheep.jpg':'sheep.jpg';
+    const goatCell=h.goatId.toLowerCase();
+    const medCell=h.medicine.toLowerCase();
+
+    if(query && !goatCell.includes(query) && !medCell.includes(query)) return; // skip if not match
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><img src="${goatImg}">${h.goatId}</td>
+      <td>${h.medicine}</td>
+      <td>${h.qty} ${h.unit}</td>
+      <td>${h.dateTime}</td>
+      <td>${h.notes||''}</td>
+      <td><button class="delete-btn" data-index="${index}">Delete</button></td>`;
+    historyTable.appendChild(tr);
+  });
+
+  document.querySelectorAll('#history-table .delete-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      historyDeleteIndex=parseInt(btn.dataset.index);
+      historyDeleteText.textContent=`Delete history entry for goat "${loadHistory()[historyDeleteIndex].goatId}"?`;
+      historyDeleteModal.style.display='flex';
+    };
+  });
+}
+
+// --- Confirm History Delete ---
+historyConfirmDelete.onclick=()=>{
+  if(historyDeleteIndex!==null){
+    let hist=loadHistory();
+    hist.splice(historyDeleteIndex,1);
+    saveHistory(hist);
+    historyDeleteIndex=null;
+    historyDeleteModal.style.display='none';
+    renderHistory();
+  }
+};
+historyCancelDelete.onclick=()=>{historyDeleteIndex=null;historyDeleteModal.style.display='none';};
+window.addEventListener('click',e=>{if(e.target===historyDeleteModal){historyDeleteIndex=null;historyDeleteModal.style.display='none';}});
+
+// --- Live Search Event ---
+historySearch.addEventListener('input', renderHistory);
+
+// --- Add Medicine ---
+document.getElementById('add-medicine-form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=document.getElementById('med-name').value.trim();
+  const desc=document.getElementById('med-desc').value.trim();
+  const qty=parseFloat(document.getElementById('med-qty').value);
+  const unit=document.getElementById('med-unit').value;
+  if(!name || qty<=0) return;
+  let meds=loadMedicines();
+  meds.push({name,desc,qty,unit});
+  saveMedicines(meds);
+  e.target.reset();
+  renderMedicines();
+  populateDropdowns();
+  showToast('Medicine added!');
+});
+
+// --- Apply Medicine ---
+document.getElementById('apply-medicine-form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const goatId=selectGoat.value;
+  const medName=selectMed.value;
+  const qty=parseFloat(document.getElementById('apply-qty').value);
+  const unit=document.getElementById('apply-unit').value;
+  const date=document.getElementById('apply-date').value;
+  const notes=document.getElementById('apply-notes').value.trim();
+  if(!goatId||!medName||qty<=0||!date) return;
+
+  let meds=loadMedicines();
+  const medIndex=meds.findIndex(m=>m.name===medName && m.unit===unit);
+  if(medIndex===-1||meds[medIndex].qty<qty){return showToast('Not enough medicine in stock!');}
+  meds[medIndex].qty-=qty;
+  saveMedicines(meds);
+
+  let history=loadHistory();
+  const now=new Date();
+  const time12=formatTime12(now);
+  const dateTime=`${date} ${time12}`;
+  history.push({goatId,medicine:medName,qty,unit,dateTime,notes});
+  saveHistory(history);
+
+  e.target.reset();
+  renderMedicines();
+  renderHistory();
+  populateDropdowns();
+  showToast('Medicine applied!');
+});
+
+// Set default date to today
+document.getElementById('apply-date').value=new Date().toISOString().split('T')[0];
+
+// Initial render
+populateDropdowns();
+renderMedicines();
+renderHistory();
+</script>
+
+</body>
+</html>

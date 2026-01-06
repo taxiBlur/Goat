@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bred Goats — SHEEP</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Montserrat,sans-serif;background:#f4f4f4;line-height:1.5;color:#333;}
+header{background:#6f4e37;color:#fff;padding:16px;}
+.top-row{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;flex-wrap:wrap;}
+.logo{font-size:2rem;font-family:'Playfair Display',serif;}
+nav ul{display:flex;gap:16px;list-style:none;flex-wrap:wrap;margin-top:8px;}
+nav a{text-decoration:none;color:#fff;font-weight:600;padding:6px 12px;border-radius:6px;transition:background 0.3s;}
+nav a:hover{background:rgba(255,255,255,0.2);}
+main{max-width:1200px;margin:80px auto 40px;padding:0 16px;display:flex;flex-direction:column;gap:20px;}
+h1,h2{text-align:center;color:#6f4e37;margin-bottom:16px;}
+h1{font-size:2rem;}
+h2{font-size:1.5rem;margin-top:0;}
+#history-search{padding:8px;border-radius:6px;border:1px solid #ccc;width:100%;max-width:400px;margin:0 auto 16px;display:block;}
+form{background:#fff;padding:24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;}
+form button{flex:1 1 100%;padding:12px;background:#6f4e37;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:0.3s;}
+form button:hover{background:#593c2b;}
+.table-container{overflow-x:auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+table{width:100%;border-collapse:collapse;min-width:700px;}
+th,td{text-align:center;padding:12px;border-bottom:1px solid #eee;vertical-align:middle;cursor:pointer;}
+th{background:#6f4e37;color:#fff;border-radius:8px 8px 0 0;}
+.goat-info{display:flex;align-items:center;gap:8px;}
+.goat-info img{width:50px;height:50px;object-fit:cover;border-radius:8px;}
+.delete-btn{background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;transition:0.3s;}
+.delete-btn:hover{background:#c0392b;}
+.outcome-select{padding:4px 6px;border-radius:4px;border:1px solid #ccc;}
+.success{background:#27ae60;color:#fff;}
+.failed{background:#e74c3c;color:#fff;}
+.pending{background:#f1c40f;color:#fff;}
+#export-csv{padding:8px 12px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;margin:8px auto;display:block;}
+#export-csv:hover{background:#219150;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:12px 20px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3);display:none;z-index:9999;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:9999;}
+.modal-content{background:#fff;padding:24px;border-radius:12px;max-width:400px;width:90%;text-align:center;position:relative;}
+.modal-close{position:absolute;top:10px;right:14px;font-size:20px;font-weight:bold;cursor:pointer;}
+
+/* --- Custom Select for Images --- */
+.custom-select {position:relative;width:100%;max-width:400px;margin-bottom:12px;cursor:pointer;user-select:none;}
+.select-selected {background:#fff;border:1px solid #ccc;padding:12px;border-radius:8px;display:flex;align-items:center;gap:8px;}
+.select-selected img{width:40px;height:40px;object-fit:cover;border-radius:6px;}
+.select-items {position:absolute;background:#fff;border:1px solid #ccc;border-top:none;width:100%;max-height:200px;overflow-y:auto;z-index:99;border-radius:0 0 8px 8px;display:none;}
+.select-items div{padding:8px;display:flex;align-items:center;gap:8px;transition:background 0.2s;}
+.select-items div:hover{background:#f1f1f1;}
+.select-items img{width:40px;height:40px;object-fit:cover;border-radius:6px;}
+
+@media(max-width:768px){.goat-info img{width:40px;height:40px;}table{min-width:100%;}th,td{font-size:0.85rem;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top-row">
+    <div class="logo">Bagaloyos Goat Farm</div>
+    <nav>
+      <ul>
+        <li><a href="admin.html">Home</a></li>
+        <li><a href="manage.html">Manage Goats</a></li>
+        <li><a href="add.html">Add Goat</a></li>
+        <li><a href="medic.html">Medicine</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+<h1>Breeding Section</h1>
+
+<h2>Breed Goats</h2>
+<form id="breed-form">
+  <!-- Custom dropdowns -->
+  <div class="custom-select" id="male-goat-select">
+    <div class="select-selected">Select Male Goat</div>
+    <div class="select-items"></div>
+  </div>
+
+  <div class="custom-select" id="female-goat-select">
+    <div class="select-selected">Select Female Goat</div>
+    <div class="select-items"></div>
+  </div>
+
+  <input type="date" id="breed-date" required>
+  <button type="submit">Record Breeding</button>
+</form>
+
+
+
+<input type="text" id="history-search" placeholder="Search breeding history by ID, breed, or date...">
+
+<h2>Breeding History</h2>
+<button id="export-csv">Export CSV</button>
+<div class="table-container">
+  <table id="history-table">
+    <thead>
+      <tr>
+        <th data-sort="male">Male Goat</th>
+        <th data-sort="female">Female Goat</th>
+        <th data-sort="date">Date</th>
+        <th data-sort="attempt">Attempt</th>
+        <th>Outcome</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="lineageModal">
+  <div class="modal-content">
+    <span class="modal-close" id="lineageClose">&times;</span>
+    <div id="lineageBody"></div>
+  </div>
+</div>
+
+<script>
+// ================= ELEMENTS =================
+const breedForm = document.getElementById('breed-form');
+const maleSelect = document.getElementById('male-goat-select');
+const femaleSelect = document.getElementById('female-goat-select');
+const historyTable = document.querySelector('#history-table tbody');
+const searchInput = document.getElementById('history-search');
+const exportBtn = document.getElementById('export-csv');
+const toast = document.getElementById('toast');
+const lineageModal = document.getElementById('lineageModal');
+const lineageClose = document.getElementById('lineageClose');
+const lineageBody = document.getElementById('lineageBody');
+
+// ================= STORAGE =================
+const loadGoats = () => JSON.parse(localStorage.getItem('goats') || '[]');
+const saveGoats = g => localStorage.setItem('goats', JSON.stringify(g));
+const loadHistory = () => JSON.parse(localStorage.getItem('breedingHistory') || '[]');
+const saveHistory = h => localStorage.setItem('breedingHistory', JSON.stringify(h));
+
+// ================= TOAST =================
+const showToast = msg => {
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+};
+
+// ================= DROPDOWNS =================
+function populateGoatDropdowns() {
+  const goats = loadGoats();
+  const setup = (el, sexFilter) => {
+    const selected = el.querySelector('.select-selected');
+    const items = el.querySelector('.select-items');
+    items.innerHTML = '';
+    goats.filter(g => g.sex === sexFilter).forEach(g => {
+      const d = document.createElement('div');
+      d.innerHTML = `<img src="${g.img || 'sheep.jpg'}"><span>${g.id} - ${g.breed}</span>`;
+      d.onclick = () => {
+        selected.innerHTML = d.innerHTML;
+        selected.dataset.value = g.id;
+        items.style.display = 'none';
+      };
+      items.appendChild(d);
+    });
+    selected.onclick = e => {
+      e.stopPropagation();
+      document.querySelectorAll('.select-items').forEach(i => i.style.display = 'none');
+      items.style.display = items.style.display === 'block' ? 'none' : 'block';
+    };
+  };
+  setup(maleSelect, 'Male');
+  setup(femaleSelect, 'Female');
+}
+document.addEventListener('click', () => document.querySelectorAll('.select-items').forEach(i => i.style.display = 'none'));
+
+// ================= ID GENERATION =================
+function generateGoatId() {
+  let max = 0;
+  loadGoats().forEach(g => {
+    const n = parseInt(g.id.replace('GOAT-', ''));
+    if (!isNaN(n) && n > max) max = n;
+  });
+  return `GOAT-${String(max + 1).padStart(3, '0')}`;
+}
+
+// ================= FAMILY UTILS =================
+function getParents(goatId) {
+  const g = loadGoats().find(x => x.id === goatId);
+  return g?.parents || {};
+}
+function areSiblings(goatAId, goatBId) {
+  const parentsA = getParents(goatAId);
+  const parentsB = getParents(goatBId);
+  return parentsA.male && parentsA.female &&
+         parentsA.male === parentsB.male && parentsA.female === parentsB.female;
+}
+function isParentChild(goatAId, goatBId) {
+  const parentsA = getParents(goatAId);
+  return parentsA.male === goatBId || parentsA.female === goatBId;
+}
+
+// ================= ADD CHILD =================
+function addChild(maleId, femaleId, sex, img) {
+  const goats = loadGoats();
+  const male = goats.find(g => g.id === maleId);
+  const female = goats.find(g => g.id === femaleId);
+  if (!male || !female) return;
+
+  const id = generateGoatId();
+  const childBreed = `${male.breed} × ${female.breed}`;
+  const child = {
+    id,
+    breed: childBreed,
+    sex,
+    img: img || 'sheep.jpg',
+    age: { years: 0, months: 0 },
+    addedAt: new Date().toLocaleDateString(),
+    parents: { male: maleId, female: femaleId },
+    children: []
+  };
+
+  goats.push(child);
+
+  male.children = male.children || [];
+  female.children = female.children || [];
+  male.children.push(id);
+  female.children.push(id);
+
+  saveGoats(goats);
+  populateGoatDropdowns();
+  renderHistory();
+  showToast(`Child ${id} added!`);
+}
+
+// ================= LINEAGE MODAL =================
+function showLineage(record) {
+  const goats = loadGoats();
+  const male = goats.find(g => g.id === record.male);
+  const female = goats.find(g => g.id === record.female);
+  const children = goats.filter(g => g.parents?.male === record.male && g.parents?.female === record.female);
+
+  lineageBody.innerHTML = `
+    <h3>Lineage (${record.date})</h3>
+    <p><b>Male:</b> ${male?.id} (${male?.breed}) <img src="${male?.img}" style="width:40px;height:40px;border-radius:6px;vertical-align:middle;margin-left:4px"></p>
+    <p><b>Female:</b> ${female?.id} (${female?.breed}) <img src="${female?.img}" style="width:40px;height:40px;border-radius:6px;vertical-align:middle;margin-left:4px"></p>
+    <h4>Children</h4>
+    ${children.length ? `<ul style="text-align:left">${children.map(c => `<li>${c.id} (${c.sex}) - ${c.breed} <img src="${c.img}" style="width:30px;height:30px;border-radius:6px;vertical-align:middle;margin-left:4px"></li>`).join('')}</ul>` : '<p>No children recorded.</p>'}
+  `;
+
+  // Add new child section
+  const box = document.createElement('div');
+  box.style.marginTop = '12px';
+
+  const sex = document.createElement('select');
+  sex.innerHTML = `<option value="">Select Sex</option><option>Male</option><option>Female</option>`;
+
+  const img = document.createElement('input');
+  img.type = 'file';
+  img.accept = 'image/*';
+  img.dataset.img = 'sheep.jpg';
+
+  const imgPreview = document.createElement('img');
+  imgPreview.src = 'sheep.jpg';
+  imgPreview.style.width = '60px';
+  imgPreview.style.height = '60px';
+  imgPreview.style.objectFit = 'cover';
+  imgPreview.style.borderRadius = '6px';
+  imgPreview.style.verticalAlign = 'middle';
+  imgPreview.style.marginLeft = '8px';
+
+  img.onchange = () => {
+    const file = img.files[0];
+    if (!file) { img.dataset.img = 'sheep.jpg'; imgPreview.src = 'sheep.jpg'; return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.dataset.img = e.target.result;
+      imgPreview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = 'Add Child';
+  btn.style.marginLeft = '8px';
+  btn.onclick = () => {
+    if (!sex.value) return showToast('Select sex');
+    addChild(record.male, record.female, sex.value, img.dataset.img || 'sheep.jpg');
+    showLineage(record); // refresh modal after adding
+  };
+
+  box.append('Add New Child: ', sex, img, imgPreview, btn);
+  lineageBody.appendChild(box);
+
+  lineageModal.style.display = 'flex';
+}
+lineageClose.onclick = () => lineageModal.style.display = 'none';
+
+// ================= HISTORY =================
+function renderHistory(list = null) {
+  const history = list || loadHistory();
+  const goats = loadGoats();
+  historyTable.innerHTML = '';
+
+  history.forEach((h, i) => {
+    const m = goats.find(g => g.id === h.male);
+    const f = goats.find(g => g.id === h.female);
+
+    const tr = document.createElement('tr');
+    tr.className = h.outcome.toLowerCase();
+    tr.innerHTML = `
+      <td><img src="${m?.img || 'sheep.jpg'}" style="width:30px;height:30px;border-radius:6px;vertical-align:middle;margin-right:4px">${h.male} (${m?.breed || ''})</td>
+      <td><img src="${f?.img || 'sheep.jpg'}" style="width:30px;height:30px;border-radius:6px;vertical-align:middle;margin-right:4px">${h.female} (${f?.breed || ''})</td>
+      <td>${h.date}</td>
+      <td>${h.attempt}</td>
+      <td>
+        <select class="outcome-select" data-i="${i}">
+          <option ${h.outcome === 'Pending' ? 'selected' : ''}>Pending</option>
+          <option ${h.outcome === 'Success' ? 'selected' : ''}>Success</option>
+          <option ${h.outcome === 'Failed' ? 'selected' : ''}>Failed</option>
+        </select>
+      </td>
+      <td>
+        <button class="delete-btn" data-i="${i}">🗑️</button>
+        <button class="view-lineage" data-i="${i}">👁️</button>
+      </td>
+    `;
+    historyTable.appendChild(tr);
+  });
+
+  document.querySelectorAll('.outcome-select').forEach(s =>
+    s.onchange = () => {
+      const h = loadHistory();
+      h[s.dataset.i].outcome = s.value;
+      saveHistory(h);
+      renderHistory();
+    }
+  );
+
+  document.querySelectorAll('.delete-btn').forEach(b =>
+    b.onclick = () => {
+      if (!confirm('Are you sure you want to delete this record?')) return;
+      const h = loadHistory();
+      h.splice(b.dataset.i, 1);
+      saveHistory(h);
+      renderHistory();
+    }
+  );
+
+  document.querySelectorAll('.view-lineage').forEach(b =>
+    b.onclick = () => showLineage(loadHistory()[b.dataset.i])
+  );
+}
+
+// ================= FORM SUBMIT =================
+breedForm.onsubmit = e => {
+  e.preventDefault();
+  const m = maleSelect.querySelector('.select-selected')?.dataset.value;
+  const f = femaleSelect.querySelector('.select-selected')?.dataset.value;
+  const d = breedForm['breed-date'].value;
+  if (!m || !f) return showToast('Invalid selection');
+  if (m === f || isParentChild(m,f) || isParentChild(f,m) || areSiblings(m,f)) return showToast('Cannot breed siblings or parent-child!');
+
+  const h = loadHistory();
+  h.push({male:m,female:f,date:d,attempt:h.filter(x=>x.male===m&&x.female===f).length+1,outcome:'Pending'});
+  saveHistory(h);
+  renderHistory();
+  breedForm.reset();
+  maleSelect.querySelector('.select-selected').innerHTML='Select Male Goat';
+  femaleSelect.querySelector('.select-selected').innerHTML='Select Female Goat';
+  showToast('Breeding recorded');
+};
+
+// ================= SEARCH / EXPORT =================
+searchInput.oninput = () => {
+  const t = searchInput.value.toLowerCase();
+  renderHistory(loadHistory().filter(h=>h.male.toLowerCase().includes(t)||h.female.toLowerCase().includes(t)||h.date.includes(t)));
+};
+exportBtn.onclick = () => {
+  let csv = 'Male,Female,Date,Attempt,Outcome\n';
+  loadHistory().forEach(x=>csv+=`${x.male},${x.female},${x.date},${x.attempt},${x.outcome}\n`);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='breeding_history.csv';
+  a.click();
+};
+
+// ================= SORTABLE COLUMNS =================
+document.querySelectorAll('#history-table th[data-sort]').forEach(th=>{
+  th.style.cursor='pointer';
+  th.onclick=()=>{
+    const key=th.dataset.sort;
+    const h=[...loadHistory()];
+    h.sort((a,b)=>{
+      if(key==='date') return new Date(a.date)-new Date(b.date);
+      if(key==='attempt') return a.attempt-b.attempt;
+      return (a[key]||'').localeCompare(b[key]||'');
+    });
+    renderHistory(h);
+  };
+});
+
+// ================= INIT =================
+populateGoatDropdowns();
+renderHistory();
+</script>
+
+</body>
+</html>

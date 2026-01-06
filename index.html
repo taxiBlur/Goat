@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BAGALOYOS GOAT FARM - ADMIN PANEL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+  --accent:#6f4e37;
+  --muted:#eeebeb;
+  --nav-height:86px;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto;
+  scroll-behavior:smooth;
+  padding-top: var(--nav-height);
+  background-color:#eeebeb;
+}
+
+/* Header */
+header{
+  height:var(--nav-height);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px 16px;
+  border-bottom:1px solid #ececec;
+  background:#eeebeb;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:1000;
+}
+
+.top-row{
+  width:100%;
+  max-width:1200px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-family:'Playfair Display',serif;
+  color:var(--accent);
+  font-size:2rem;
+  letter-spacing:2px;
+  text-align:center;
+  flex:1;
+}
+
+nav{
+  width:100%;
+  max-width:1200px;
+  margin-top:6px;
+  display:flex;
+  justify-content:center;
+}
+
+nav ul{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  list-style:none;
+  padding:0;
+  margin:0;
+  justify-content:center;
+}
+
+nav a{
+  position:relative;
+  text-decoration:none;
+  font-weight:600;
+  color:#222;
+  padding-bottom:4px;
+}
+
+nav a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:0;
+  height:2px;
+  background-color:var(--accent);
+  transition:width 0.3s ease;
+}
+
+nav a:hover::after{width:100%;}
+
+/* Hero Section */
+.hero{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  height:60vh;
+  min-height:400px;
+  overflow:hidden;
+  padding:0 12px;
+}
+
+.hero-bg{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  filter:contrast(100%) brightness(70%);
+  z-index:1;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  z-index:2;
+  pointer-events:none;
+}
+
+.hero-content{
+  position:relative;
+  z-index:3;
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+  max-width:1200px;
+  width:100%;
+  align-items:center;
+}
+
+.hero-left{
+  flex:1 1 300px;
+  color:white;
+  max-width:640px;
+  padding:24px 12px;
+}
+
+.eyebrow{
+  font-size:12px;
+  font-weight:600;
+  margin-bottom:6px;
+  opacity:0.9;
+}
+
+.headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,6vw,4rem);
+  line-height:1.1;
+  margin-bottom:12px;
+  color:#fff;
+  text-shadow:0 3px 12px rgba(0,0,0,0.45);
+  word-wrap:break-word;
+}
+
+.sub{
+  font-size:clamp(1rem,3vw,1.5rem);
+  font-weight:700;
+  margin-bottom:16px;
+  word-wrap:break-word;
+}
+
+.cta{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 16px;
+  border-radius:28px;
+  border:2px solid rgba(255,255,255,0.9);
+  background:transparent;
+  color:white;
+  text-decoration:none;
+  font-weight:700;
+  font-size:0.95rem;
+  flex-wrap:wrap;
+}
+
+/* Product Grid */
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+  gap:20px;
+  max-width:1200px;
+  margin:0 auto 48px;
+  padding:0 12px;
+}
+
+.product-card{
+  background:white;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  text-align:center;
+  transition:transform 0.2s;
+}
+
+.product-card:hover{transform:translateY(-4px);}
+
+.product-img{
+  width:100%;
+  padding-top:66.66%;
+  background-size:cover;
+  background-position:center;
+}
+
+.product-card h3{margin:12px 0 6px;font-size:1.1rem;color:var(--accent);}
+.product-card p{margin:0 12px 12px;font-size:0.85rem;color:#555;}
+
+/* Footer */
+footer{
+  background:#222;
+  color:#fff;
+  padding:24px 12px;
+  text-align:center;
+}
+
+footer p{margin:4px 0;font-size:13px;}
+
+/* Modal styles */
+.modal {
+  display:none;
+  position:fixed;
+  z-index:9999;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  overflow:auto;
+  background-color:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  max-width:400px;
+  width:90%;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  position:relative;
+}
+
+.modal-close {
+  position:absolute;
+  top:8px;
+  right:12px;
+  font-size:20px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* Responsive adjustments */
+@media(max-width:1024px){
+  .top-row{flex-direction:column; gap:6px;}
+  nav ul{gap:12px;}
+  .hero-left{padding:16px;}
+}
+
+@media(max-width:768px){
+  .headline{font-size:clamp(1.5rem,6vw,3rem);}
+  .cta{font-size:0.85rem; padding:8px 12px;}
+  .product-card h3{font-size:1rem;}
+  .product-card p{font-size:0.8rem;}
+}
+
+@media(max-width:480px){
+  .hero{height:50vh; min-height:300px;}
+  .hero-left{flex:1 1 100%; padding:12px;}
+  nav ul{flex-direction:column; gap:8px;}
+  .product-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
+  .product-card h3{font-size:0.95rem;}
+  .product-card p{font-size:0.75rem;}
+  .cta{font-size:0.8rem; padding:6px 10px;}
+
+  
+}
+
+  </style>
+</head>
+<body>
+<!-- LOGIN OVERLAY -->
+
+
+<header>
+  <div class="top-row">
+    <div style="width:120px"></div>
+    <div class="logo">Bagaloyos Goat Farm</div>
+    <div style="width:120px"></div>
+  </div>
+  <nav>
+    <ul>
+      >
+      
+      <li><a href="#" data-type="all">All Goats</a></li>
+      <li><a href="#" data-type="male">Male Goat</a></li>
+      <li><a href="#" data-type="female">Female Goat</a></li>
+      <
+      
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-bg" style="background-image:url('sheep.jpg')"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <h1 class="headline">Bagaloyos Goat Farm </h1>
+      <a class="cta" href="#">See Your Goats</a>
+      <div class="eyebrow">Aspire</div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <h2 id="collection-title" style="text-align:center;margin-bottom:12px;"> Your Goat Collection</h2>
+  <div id="search-container" style="text-align:center;margin-bottom:16px;">
+    <input type="text" id="search-input" placeholder="Search by ID, Breed, Origin" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;width:220px;">
+  </div>
+  <div class="product-grid" id="product-grid"></div>
+</main>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content" id="modal-content">
+    <span class="modal-close" id="modal-close">&times;</span>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Bagaloyos Goat Farm. All Rights Reserved.</p>
+  <p>Contact: info@BagaloyoGoatFarm.com | Phone: +123 456 7890</p>
+</footer>
+
+<script>
+/* ==================== MODAL FUNCTIONALITY ==================== */
+function showModal(content) {
+  const modal = document.getElementById('modal');
+  const modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = content;
+  modal.style.display = 'flex';
+}
+
+document.getElementById('modal-close').addEventListener('click', () => {
+  document.getElementById('modal').style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('modal');
+  if(e.target === modal) modal.style.display = 'none';
+});
+
+/* ==================== PAGINATION SETUP ==================== */
+const searchInput = document.getElementById('search-input');
+let activeFilter = 'all';
+let currentPage = 1;
+const goatsPerPage = 10;
+
+function renderProducts(filter = 'all', searchTerm = '') {
+  activeFilter = filter;
+  const grid = document.getElementById('product-grid');
+  const title = document.getElementById('collection-title');
+
+  let goats = JSON.parse(localStorage.getItem('goats') || '[]');
+
+  // Filter by male/female/all
+  if(filter === 'male') goats = goats.filter(g => g.sex === 'Male');
+  if(filter === 'female') goats = goats.filter(g => g.sex === 'Female');
+
+  // Filter by search term
+  if(searchTerm) {
+    const term = searchTerm.toLowerCase();
+    goats = goats.filter(g => 
+      g.id.toLowerCase().includes(term) ||
+      g.breed.toLowerCase().includes(term) ||
+      g.local.toLowerCase().includes(term)
+    );
+  }
+
+  // Update title
+  title.textContent = filter==='male'?'Male Goats':
+                      filter==='female'?'Female Goats':'Our Goat Collection';
+
+  const totalPages = Math.ceil(goats.length / goatsPerPage);
+  if(currentPage > totalPages) currentPage = totalPages || 1;
+  const start = (currentPage - 1) * goatsPerPage;
+  const end = start + goatsPerPage;
+  const goatsToShow = goats.slice(start, end);
+
+  // Render goats
+  grid.innerHTML = '';
+  goatsToShow.forEach((g) => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <div class="product-img" style="background-image:url('${g.img || 'sheep.jpg'}');"></div>
+      <h3>${g.id}</h3>
+      <p>${g.breed} - ${g.sex}</p>
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px;">
+        <button class="view-details" style="flex:1;padding:6px 12px;border:none;background:#6f4e37;color:white;border-radius:6px;cursor:pointer;">View Details</button>
+      </div>
+    `;
+
+    // View details modal
+    card.querySelector('.view-details').addEventListener('click', () => {
+      showModal(`
+        <h3>Goat ID: ${g.id}</h3>
+        <img src="${g.img || 'sheep.jpg'}" style="width:100%;border-radius:8px;margin-bottom:8px;">
+        <p><strong>Sex:</strong> ${g.sex}</p>
+        <p><strong>Age:</strong> ${g.age.years} years, ${g.age.months} months</p>
+        <p><strong>Breed:</strong> ${g.breed}</p>
+        <p><strong>Origin:</strong> ${g.local}</p>
+        <p><strong>Added At:</strong> ${g.addedAt}</p>
+      `);
+    });
+
+    grid.appendChild(card);
+  });
+
+  // Render pagination
+  let paginationDiv = document.getElementById('pagination');
+  if(!paginationDiv){
+    paginationDiv = document.createElement('div');
+    paginationDiv.id = 'pagination';
+    paginationDiv.style.textAlign = 'center';
+    paginationDiv.style.margin = '12px 0';
+    grid.parentNode.insertBefore(paginationDiv, grid.nextSibling);
+  }
+ paginationDiv.innerHTML = '';
+
+if(totalPages > 1){
+
+  // ◀ Prev
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '◀';
+  prevBtn.style.margin = '0 8px';
+  prevBtn.style.padding = '6px 12px';
+  prevBtn.disabled = currentPage <= 1;
+  prevBtn.onclick = () => {
+    currentPage--;
+    renderProducts(activeFilter, searchInput.value.trim());
+  };
+
+  // Page info
+  const pageInfo = document.createElement('span');
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+  pageInfo.style.margin = '0 8px';
+  pageInfo.style.fontWeight = '600';
+
+  // ▶ Next
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = '▶';
+  nextBtn.style.margin = '0 8px';
+  nextBtn.style.padding = '6px 12px';
+  nextBtn.disabled = currentPage >= totalPages;
+  nextBtn.onclick = () => {
+    currentPage++;
+    renderProducts(activeFilter, searchInput.value.trim());
+  };
+
+  paginationDiv.appendChild(prevBtn);
+  paginationDiv.appendChild(pageInfo);
+  paginationDiv.appendChild(nextBtn);
+}
+
+}
+
+/* ==================== INITIAL RENDER ==================== */
+renderProducts();
+
+/* ==================== NAV FILTERS ==================== */
+document.querySelectorAll('nav a[data-type]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const type = link.dataset.type;
+    currentPage = 1; // reset to first page
+    renderProducts(type, searchInput.value.trim());
+    
+    // Add active class
+    document.querySelectorAll('nav a[data-type]').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    document.getElementById('product-grid').scrollIntoView({behavior:'smooth'});
+  });
+});
+
+/* ==================== LIVE SEARCH ==================== */
+searchInput.addEventListener('input', () => {
+  currentPage = 1;
+  renderProducts(activeFilter, searchInput.value.trim());
+});
+
+/* ==================== HERO CTA SCROLL ==================== */
+document.querySelector('.hero .cta').addEventListener('click', e=>{
+  e.preventDefault();
+  document.getElementById('product-grid').scrollIntoView({behavior:'smooth'});
+});
+
+
+</script>
+</script>
+</body>
+</html>
